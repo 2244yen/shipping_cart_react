@@ -26,8 +26,13 @@ class Order extends Component {
 
     handleOrder (e) {
         e.preventDefault();
-        this.setState({ cart: [], isOrdered: true });
-        clearAll();
+        if (this.state.cart.length > 0) {
+            this.setState({ cart: [], isOrdered: true });
+            clearAll();
+        } else {
+            this.props.history.push("/");
+        }
+        
     }
 
     componentDidMount () {
@@ -55,19 +60,19 @@ class Order extends Component {
         return (
             <div className="container">
                 {
-                    this.state.isOrdered ?
-                    <h3>Thanks for your ordering! See your later!</h3> :
-                    <div className="row">
-                        <div className="col-md-8 shopping-list">
-                            { result }
+                    this.state.isOrdered  ?
+                        <h3>Thanks for your ordering! See your later!</h3> :
+                        <div className="row">
+                            <div className="col-md-8 shopping-list">
+                                { result }
+                            </div>
+                            <div className="col-md-4 cart">
+                                <Cart cart={this.state.cart}>
+                                    {/* giong slot */}
+                                    <button className="btn btn-info" onClick={ e => this.handleOrder(e) } >Place Order</button>
+                                </Cart>
+                            </div>
                         </div>
-                        <div className="col-md-4 cart">
-                            <Cart cart={this.state.cart}>
-                                {/* giong slot */}
-                                <button className="btn btn-info" onClick={ e => this.handleOrder(e) } >Place Order</button>
-                            </Cart>
-                        </div>
-                    </div>
                 }
             </div>
         );

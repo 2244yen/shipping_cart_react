@@ -3,16 +3,17 @@ import ShopList from '../ShopList/ShopList';
 import Cart from '../Cart/Cart';
 import apiShop from '../../services/shop';
 import { getDBCart, addToLocalStorage }  from '../../utils/getData';
+import '../../assets/css/shop.css';
 
 class Shop extends Component {
     constructor (props) {
         super(props);
         this.state = {
             items: [],
-            cart: [],
-            cartCount: {}
+            cart: []
         };
         this.addToCart = this.addToCart.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
     }
 
     addToCart (key) {
@@ -33,8 +34,27 @@ class Shop extends Component {
             cart: newCart
             // cartCount: newCartCount
         });
-
         addToLocalStorage(key);
+    }
+
+    getFilterData (str) {
+        apiShop.fetchData().then(response => {
+            if (response) {
+                var result = response.filter(item => {
+                    return item.name.toLowerCase().includes(str.toLowerCase()) || item.category.toLowerCase().includes(str.toLowerCase());
+                })
+                this.setState({
+                    items: result
+                });
+            }
+        })
+    }
+
+    handleSearch (e) {
+        e.preventDefault();
+        if (e.keyCode === 13) {
+            this.getFilterData(e.target.value);
+        }
     }
 
     componentDidMount () {
@@ -51,12 +71,14 @@ class Shop extends Component {
                 this.setState({ cart: items});
             }
         });
-        
     }
 
     render () {
         return (
             <div className="container">
+                <div className="search">
+                    <input type="text" name="search" onKeyUp={this.handleSearch} className="form-control" />
+                </div>
                 <div className="row">
                     <div className="col-md-8 shopping-list">
                         <ShopList items={this.state.items} addToCart={this.addToCart}/>
